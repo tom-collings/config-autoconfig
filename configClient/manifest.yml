@@ -1,9 +1,0 @@
----
-applications:
-- name: configClient
-  memory: 1G
-  host:  configClient
-  path: target/configClient-0.0.1-SNAPSHOT.jar
-  services:
-  - my-config-server
-

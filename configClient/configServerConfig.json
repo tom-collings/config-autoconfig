@@ -1,0 +1,9 @@
+{
+  "vault" :
+  {
+    "host":"vault.cfapps.haas-156.pez.pivotal.io",
+    "port":80,
+    "backend":"secret",
+    "defaultKey":"cook"
+  }
+}

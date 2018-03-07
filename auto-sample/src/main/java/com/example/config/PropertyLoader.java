@@ -17,9 +17,6 @@ public class PropertyLoader
     @Bean
     public CustomConfigClientProperties configClientProperties() {
         CustomConfigClientProperties client = new CustomConfigClientProperties(this.environment);
-        System.out.println(client.getLabel());
-        System.out.println(client.getProfile());
-        System.out.println(client.getName());
         return client;
     }
 

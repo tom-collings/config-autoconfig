@@ -6,6 +6,7 @@ import org.springframework.cloud.config.client.ConfigServicePropertySourceLocato
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.env.Environment;
 
 @Configuration
@@ -15,7 +16,14 @@ public class PropertyLoader
     Environment environment;
 
     @Bean
-    public CustomConfigClientProperties configClientProperties() {
+    public ConfigClientProperties configClientProperties() {
+        ConfigClientProperties client = new ConfigClientProperties(this.environment);
+        return client;
+    }
+
+    @Bean
+    @Profile("!cloud")
+    public CustomConfigClientProperties customConfigClientProperties() {
         CustomConfigClientProperties client = new CustomConfigClientProperties(this.environment);
         return client;
     }
@@ -23,8 +31,9 @@ public class PropertyLoader
 
     @Bean("customPropertyLocator")
     public CustomConfigServicePropertyLocator configServicePropertySourceLocator() {
-        CustomConfigClientProperties clientProperties = configClientProperties();
-        CustomConfigServicePropertyLocator configServicePropertySourceLocator =  new CustomConfigServicePropertyLocator(clientProperties);
+        CustomConfigClientProperties clientProperties = customConfigClientProperties();
+        ConfigClientProperties cliProps = configClientProperties();
+        CustomConfigServicePropertyLocator configServicePropertySourceLocator =  new CustomConfigServicePropertyLocator(clientProperties, cliProps);
         return configServicePropertySourceLocator;
     }
 

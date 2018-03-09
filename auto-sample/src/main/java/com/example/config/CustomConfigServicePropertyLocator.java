@@ -34,10 +34,12 @@ import java.util.Map;
 /**
  * Created by tomcollings on 3/6/18.
  */
-public class CustomConfigServicePropertyLocator implements PropertySourceLocator {
+public class CustomConfigServicePropertyLocator extends ConfigServicePropertySourceLocator{
 
-    public CustomConfigServicePropertyLocator(CustomConfigClientProperties client) {
-        this.defaultProperties = client;
+    public CustomConfigServicePropertyLocator(CustomConfigClientProperties configProperties, ConfigClientProperties client) {
+        super(client);
+        this.defaultProperties = configProperties;
+        this.client = client;
     }
 
     private static Log logger = LogFactory
@@ -45,13 +47,14 @@ public class CustomConfigServicePropertyLocator implements PropertySourceLocator
 
     private RestTemplate restTemplate;
     private CustomConfigClientProperties defaultProperties;
+    private ConfigClientProperties client;
 
 
-    //@Override
+    @Override
     //@Retryable(interceptor = "configServerRetryInterceptor")
     public org.springframework.core.env.PropertySource<?> locate(
             org.springframework.core.env.Environment environment) {
-        CustomConfigClientProperties properties = this.defaultProperties.override(environment);
+        ConfigClientProperties properties = this.client.override(environment);
         CompositePropertySource composite = new CompositePropertySource("configService");
         RestTemplate restTemplate = this.restTemplate == null ? getSecureRestTemplate(properties)
                 : this.restTemplate;
@@ -65,8 +68,8 @@ public class CustomConfigServicePropertyLocator implements PropertySourceLocator
             }
 
             String[] fileNames = new String[] { "" };
-            if (StringUtils.hasText(properties.getFileNames())) {
-                fileNames = StringUtils.commaDelimitedListToStringArray(properties.getFileNames());
+            if (StringUtils.hasText(defaultProperties.getFileNames())) {
+                fileNames = StringUtils.commaDelimitedListToStringArray(defaultProperties.getFileNames());
             }
 
             String state = ConfigClientStateHolder.getState();
